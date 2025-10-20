@@ -1,61 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp1
 {
-    /// <summary>
-    /// Логика взаимодействия для CategoriesPage.xaml
-    /// </summary>
     public partial class CategoriesPage : Page
     {
-        public CategoriesPage(ProductInventoryEntities productService)
+        private ProductInventoryEntities _context;
+
+        public CategoriesPage(ProductInventoryEntities context)
         {
             InitializeComponent();
-            _productService = productService;
+            _context = context;
             LoadCategories();
         }
 
         private void LoadCategories()
         {
-            var categories = _productService.GetAllCategories();
+            var categories = _context.Category.ToList();
             CategoriesGrid.ItemsSource = categories;
         }
 
         private void BtnAddCategory_Click(object sender, RoutedEventArgs e)
         {
-            var categoryName = Microsoft.VisualBasic.Interaction.InputBox(
-                "Введите название новой категории:", "Новая категория", "");
+            var categoryName = txtNewCategory.Text.Trim();
 
-            if (!string.IsNullOrWhiteSpace(categoryName))
+            if (!string.IsNullOrWhiteSpace(categoryName) && categoryName != "Новая категория")
             {
+                // Проверяем, нет ли уже такой категории
+                if (_context.Category.Any(c => c.CategoryName == categoryName))
+                {
+                    MessageBox.Show("Категория с таким названием уже существует", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var newCategory = new Category { CategoryName = categoryName };
+                _context.Category.Add(newCategory);
+                _context.SaveChanges();
+
                 MessageBox.Show($"Категория '{categoryName}' добавлена", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadCategories();
+                txtNewCategory.Text = "Новая категория";
+            }
+            else
+            {
+                MessageBox.Show("Введите название категории", "Внимание",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private void BtnDeleteCategory_Click(object sender, RoutedEventArgs e)
         {
-            if (CategoriesGrid.SelectedItem != null)
+            if (CategoriesGrid.SelectedItem is Category selectedCategory)
             {
-                dynamic selectedCategory = CategoriesGrid.SelectedItem;
+                // Проверяем, нет ли товаров в этой категории
+                if (_context.Product.Any(p => p.CategoryID == selectedCategory.CategoryID))
+                {
+                    MessageBox.Show("Нельзя удалить категорию, в которой есть товары", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 var result = MessageBox.Show($"Удалить категорию '{selectedCategory.CategoryName}'?",
                     "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
                 {
+                    _context.Category.Remove(selectedCategory);
+                    _context.SaveChanges();
+
                     MessageBox.Show("Категория удалена", "Успех",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadCategories();
@@ -66,6 +81,11 @@ namespace WpfApp1
                 MessageBox.Show("Выберите категорию для удаления", "Внимание",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadCategories();
         }
     }
 }

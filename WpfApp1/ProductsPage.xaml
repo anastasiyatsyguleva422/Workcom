@@ -3,18 +3,19 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Товары">
 
-    <Grid Margin="10" Background="White">
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Панель управления -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <Button x:Name="btnAdd" Content="Добавить" Width="80" Click="BtnAdd_Click"/>
-            <Button x:Name="btnEdit" Content="Изменить" Width="80" Margin="10,0,0,0" Click="BtnEdit_Click"/>
-            <Button x:Name="btnDelete" Content="Удалить" Width="80" Margin="10,0,0,0" Click="BtnDelete_Click"/>
-            <Button x:Name="btnRefresh" Content="Обновить" Width="80" Margin="10,0,0,0" Click="BtnRefresh_Click"/>
+            <Button Content="Добавить" Width="80" Click="BtnAdd_Click"/>
+            <Button Content="Изменить" Width="80" Margin="10,0,0,0" Click="BtnEdit_Click"/>
+            <Button Content="Удалить" Width="80" Margin="10,0,0,0" Click="BtnDelete_Click"/>
+            <Button Content="Обновить" Width="80" Margin="10,0,0,0" Click="BtnRefresh_Click"/>
         </StackPanel>
 
         <!-- Список товаров -->
@@ -22,16 +23,59 @@
                   Grid.Row="1" 
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
-                  SelectionMode="Single">
+                  SelectionMode="Single"
+                  SelectionChanged="ProductsGrid_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding ProductID}" Width="50"/>
                 <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="200"/>
-                <DataGridTextColumn Header="Категория" Binding="{Binding Category}" Width="150"/>
+                <DataGridTextColumn Header="Категория" Binding="{Binding Category.CategoryName}" Width="150"/>
                 <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat={}{0:N2} руб}" Width="100"/>
                 <DataGridTextColumn Header="Количество" Binding="{Binding Quantity}" Width="80"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <TextBlock Grid.Row="2" x:Name="StatusText" Margin="0,10,0,0"/>
+        <!-- Форма редактирования -->
+        <Border Grid.Row="2" 
+                Background="#F5F5F5" 
+                BorderThickness="1" 
+                BorderBrush="#CCCCCC"
+                Padding="10"
+                Margin="0,10,0,0"
+                Visibility="Collapsed"
+                x:Name="EditForm">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Text="Название товара" FontSize="10" Foreground="Gray"/>
+                        <TextBox x:Name="txtName" Width="200" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Text="Категория" FontSize="10" Foreground="Gray"/>
+                        <ComboBox x:Name="cmbCategory" Width="150" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Text="Цена" FontSize="10" Foreground="Gray"/>
+                        <TextBox x:Name="txtPrice" Width="80" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Количество" FontSize="10" Foreground="Gray"/>
+                        <TextBox x:Name="txtQuantity" Width="80" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Content="Сохранить" Width="80" Click="BtnSave_Click"/>
+                    <Button Content="Отмена" Width="80" Margin="10,0,0,0" Click="BtnCancel_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
