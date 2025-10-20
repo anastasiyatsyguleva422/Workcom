@@ -50,7 +50,7 @@ namespace WpfApp1
 
         private void NavigateToStatistics(object sender, RoutedEventArgs e)
         {
-            //  MainContentFrame.Content = new StatisticsPage(_productService);
+            MainContentFrame.Content = new StatisticsPage(_productService);
             UpdateButtonStates(btnStatistics);
             UpdateStatus("Просмотр статистики");
         }
