@@ -36,14 +36,14 @@ namespace WpfApp1
 
         private void NavigateToProducts(object sender, RoutedEventArgs e)
         {
-            //   MainContentFrame.Content = new ProductsPage(_productService);
+            MainContentFrame.Content = new ProductsPage(_productService);
             UpdateButtonStates(btnProducts);
             UpdateStatus("Управление товарами");
         }
 
         private void NavigateToCategories(object sender, RoutedEventArgs e)
         {
-            //  MainContentFrame.Content = new CategoriesPage(_productService);
+            MainContentFrame.Content = new CategoriesPage(_productService);
             UpdateButtonStates(btnCategories);
             UpdateStatus("Управление категориями");
         }

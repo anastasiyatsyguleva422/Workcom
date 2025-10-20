@@ -1,0 +1,28 @@
+﻿<Page x:Class="WpfApp1.CategoriesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Категории">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button x:Name="btnAddCategory" Content="Добавить" Width="80" Click="BtnAddCategory_Click"/>
+            <Button x:Name="btnDeleteCategory" Content="Удалить" Width="80" Margin="10,0,0,0" Click="BtnDeleteCategory_Click"/>
+        </StackPanel>
+
+        <DataGrid x:Name="CategoriesGrid" 
+                  Grid.Row="1" 
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding CategoryID}" Width="50"/>
+                <DataGridTextColumn Header="Название категории" Binding="{Binding CategoryName}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>
