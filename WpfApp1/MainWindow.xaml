@@ -59,7 +59,7 @@
         <Frame x:Name="MainContentFrame" 
                Grid.Row="2" 
                NavigationUIVisibility="Hidden"
-               Margin="10"/>
+               Margin="10" Navigated="MainContentFrame_Navigated"/>
 
         <StatusBar Grid.Row="3" Background="#E0E0E0">
             <StatusBarItem>

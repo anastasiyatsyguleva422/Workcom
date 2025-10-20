@@ -80,5 +80,10 @@ namespace WpfApp1
         {
             StatusText.Text = message;
         }
+
+        private void MainContentFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+
+        }
     }
 }
