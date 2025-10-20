@@ -5,8 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Система учёта товаров" 
+        Height="600" 
+        Width="900"
+        WindowStartupLocation="CenterScreen">
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#2196F3" Padding="15">
+            <TextBlock Text="Система учёта товаров" 
+                      Foreground="White" 
+                      FontSize="18" 
+                      FontWeight="Bold"
+                      HorizontalAlignment="Center"/>
+        </Border>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="#F5F5F5">
+            <Button x:Name="btnProducts" 
+                    Content="Товары" 
+                    Width="100" 
+                    Height="35" 
+                    Margin="5,0"
+                    Click="NavigateToProducts"/>
+
+            <Button x:Name="btnCategories" 
+                    Content="Категории" 
+                    Width="100" 
+                    Height="35" 
+                    Margin="5,0"
+                    Click="NavigateToCategories"/>
+
+            <Button x:Name="btnStatistics" 
+                    Content="Статистика" 
+                    Width="100" 
+                    Height="35" 
+                    Margin="5,0"
+                    Click="NavigateToStatistics"/>
+
+            <Button x:Name="btnSearch" 
+                    Content="Поиск" 
+                    Width="100" 
+                    Height="35" 
+                    Margin="5,0"
+                    Click="NavigateToSearch"/>
+        </StackPanel>
+
+        <Frame x:Name="MainContentFrame" 
+               Grid.Row="2" 
+               NavigationUIVisibility="Hidden"
+               Margin="10"/>
+
+        <StatusBar Grid.Row="3" Background="#E0E0E0">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusText" Text="Готов к работе"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
