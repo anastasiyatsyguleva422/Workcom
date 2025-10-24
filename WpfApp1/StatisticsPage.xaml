@@ -13,7 +13,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <GroupBox Grid.Row="0" Header="Общая статистика" Margin="0,0,0,10">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,131">
+            <Button Content="Обновить статистику" Width="201" Click="BtnRefresh_Click" Height="37"/>
+        </StackPanel>
+        <GroupBox Grid.Row="0" Header="Общая статистика" Margin="0,50,0,10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

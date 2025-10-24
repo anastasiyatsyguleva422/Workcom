@@ -41,19 +41,18 @@
                     Margin="5,0"
                     Click="NavigateToCategories"/>
 
-            <Button x:Name="btnStatistics" 
-                    Content="Статистика" 
-                    Width="100" 
-                    Height="35" 
-                    Margin="5,0"
-                    Click="NavigateToStatistics"/>
-
             <Button x:Name="btnSearch" 
                     Content="Поиск" 
                     Width="100" 
                     Height="35" 
                     Margin="5,0"
                     Click="NavigateToSearch"/>
+            <Button x:Name="btnStatistics" 
+                    Content="Статистика" 
+                    Width="100" 
+                    Height="35" 
+                    Margin="5,0"
+                    Click="NavigateToStatistics"/>
         </StackPanel>
 
         <Frame x:Name="MainContentFrame" 

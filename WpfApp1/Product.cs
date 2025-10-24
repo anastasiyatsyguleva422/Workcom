@@ -19,8 +19,6 @@ namespace WpfApp1
         public int CategoryID { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<System.DateTime> ModifiedDate { get; set; }
     
         public virtual Category Category { get; set; }
     }

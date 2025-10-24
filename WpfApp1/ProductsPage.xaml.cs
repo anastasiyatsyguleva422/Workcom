@@ -9,11 +9,12 @@ namespace WpfApp1
     {
         private ProductInventoryEntities _context;
         private Product _currentProduct;
+        private bool _isEditing = false;
 
-        public ProductsPage(ProductInventoryEntities context)
+        public ProductsPage()
         {
             InitializeComponent();
-            _context = context;
+            _context = new ProductInventoryEntities();
             LoadProducts();
             LoadCategories();
             HideEditForm();
@@ -21,17 +22,35 @@ namespace WpfApp1
 
         private void LoadProducts()
         {
-            _context = new ProductInventoryEntities(); // Пересоздаем контекст для обновления данных
-            var products = _context.Product.Include(p => p.Category).ToList();
-            ProductsGrid.ItemsSource = products;
+            try
+            {
+                _context = new ProductInventoryEntities(); // Пересоздаем контекст для обновления данных
+                _context.Product.Load();
+                var products = _context.Product.Include(p => p.Category).ToList();
+                ProductsGrid.ItemsSource = products;
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки товаров: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadCategories()
         {
-            var categories = _context.Category.ToList();
-            cmbCategory.ItemsSource = categories;
-            cmbCategory.DisplayMemberPath = "CategoryName";
-            cmbCategory.SelectedValuePath = "CategoryID";
+            try
+            {
+                _context.Category.Load();
+                var categories = _context.Category.ToList();
+                cmbCategory.ItemsSource = categories;
+                cmbCategory.DisplayMemberPath = "CategoryName";
+                cmbCategory.SelectedValuePath = "CategoryID";
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки категорий: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ShowEditForm()
@@ -43,6 +62,7 @@ namespace WpfApp1
         {
             EditForm.Visibility = Visibility.Collapsed;
             _currentProduct = null;
+            _isEditing = false;
             ClearForm();
         }
 
@@ -58,6 +78,7 @@ namespace WpfApp1
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             _currentProduct = new Product();
+            _isEditing = false;
             ClearForm();
             ShowEditForm();
         }
@@ -66,11 +87,14 @@ namespace WpfApp1
         {
             if (ProductsGrid.SelectedItem is Product selectedProduct)
             {
-                _currentProduct = selectedProduct;
-                txtName.Text = selectedProduct.Name;
-                cmbCategory.SelectedValue = selectedProduct.CategoryID;
-                txtPrice.Text = selectedProduct.Price.ToString();
-                txtQuantity.Text = selectedProduct.Quantity.ToString();
+                _currentProduct = _context.Product.Find(selectedProduct.ProductID);
+                _isEditing = true;
+
+                txtName.Text = _currentProduct.Name;
+                cmbCategory.SelectedValue = _currentProduct.CategoryID;
+                txtPrice.Text = _currentProduct.Price.ToString();
+                txtQuantity.Text = _currentProduct.Quantity.ToString();
+
                 ShowEditForm();
             }
             else
@@ -84,21 +108,29 @@ namespace WpfApp1
         {
             if (ValidateInput())
             {
-                _currentProduct.Name = txtName.Text.Trim();
-                _currentProduct.CategoryID = (int)cmbCategory.SelectedValue;
-                _currentProduct.Price = decimal.Parse(txtPrice.Text);
-                _currentProduct.Quantity = int.Parse(txtQuantity.Text);
-
-                if (_currentProduct.ProductID == 0)
+                try
                 {
-                    _context.Product.Add(_currentProduct);
-                }
+                    _currentProduct.Name = txtName.Text.Trim();
+                    _currentProduct.CategoryID = (int)cmbCategory.SelectedValue;
+                    _currentProduct.Price = decimal.Parse(txtPrice.Text);
+                    _currentProduct.Quantity = int.Parse(txtQuantity.Text);
 
-                _context.SaveChanges();
-                LoadProducts();
-                HideEditForm();
-                MessageBox.Show("Данные сохранены", "Успех",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (!_isEditing)
+                    {
+                        _context.Product.Add(_currentProduct);
+                    }
+
+                    _context.SaveChanges();
+                    LoadProducts();
+                    HideEditForm();
+                    MessageBox.Show("Данные сохранены", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show($"Ошибка сохранения: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -116,9 +148,18 @@ namespace WpfApp1
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    _context.Product.Remove(selectedProduct);
-                    _context.SaveChanges();
-                    LoadProducts();
+                    try
+                    {
+                        var productToDelete = _context.Product.Find(selectedProduct.ProductID);
+                        _context.Product.Remove(productToDelete);
+                        _context.SaveChanges();
+                        LoadProducts();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка удаления: {ex.Message}", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             else
@@ -131,11 +172,16 @@ namespace WpfApp1
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadProducts();
+            LoadCategories();
         }
 
         private void ProductsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            HideEditForm(); // Скрываем форму при выборе другого товара
+            // Скрываем форму при выборе другого товара
+            if (EditForm.Visibility == Visibility.Visible)
+            {
+                HideEditForm();
+            }
         }
 
         private bool ValidateInput()

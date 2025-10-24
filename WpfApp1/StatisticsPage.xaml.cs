@@ -1,92 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp1
 {
-    /// <summary>
-    /// Логика взаимодействия для StatisticsPage.xaml
-    /// </summary>
     public partial class StatisticsPage : Page
     {
-        private ProductInventoryEntities _context;
-        public StatisticsPage(ProductInventoryEntities context)
+        public StatisticsPage()
         {
             InitializeComponent();
-            _context = context;
+            LoadStatistics();
+        }
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
             LoadStatistics();
         }
         private void LoadStatistics()
         {
             try
             {
-                var generalStats = GetGeneralStatistics();
-                txtTotalProducts.Text = generalStats.TotalProducts.ToString();
-                txtTotalValue.Text = $"{generalStats.TotalValue:N2} руб";
-                txtAveragePrice.Text = $"{generalStats.AveragePrice:N2} руб";
+                using (var context = new ProductInventoryEntities())
+                {
+                    // Общая статистика
+                    var products = context.Product.ToList();
+                    var totalProducts = products.Count;
+                    var totalValue = products.Sum(p => p.Price * p.Quantity);
+                    var averagePrice = products.Any() ? products.Average(p => p.Price) : 0;
 
-                var categoryStats = GetCategoryStatistics();
-                StatisticsGrid.ItemsSource = categoryStats;
+                    txtTotalProducts.Text = totalProducts.ToString();
+                    txtTotalValue.Text = $"{totalValue:N2} руб";
+                    txtAveragePrice.Text = $"{averagePrice:N2} руб";
+
+                    var categoryStats = (from product in context.Product
+                                         join category in context.Category on product.CategoryID equals category.CategoryID
+                                         group product by new { category.CategoryID, category.CategoryName } into g
+                                         select new CategoryStatistics
+                                         {
+                                             Category = g.Key.CategoryName,
+                                             TotalProducts = g.Count(),
+                                             AveragePrice = g.Average(p => p.Price),
+                                             TotalValue = g.Sum(p => p.Price * p.Quantity)
+                                         }).ToList();
+
+                    StatisticsGrid.ItemsSource = categoryStats;
+                }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                MessageBox.Show($"Ошибка при загрузке статистики: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при загрузке статистики: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private GeneralStatistics GetGeneralStatistics()
+
+        // Классы для статистики
+        public class CategoryStatistics
         {
-            var products = _context.Products.ToList();
-
-            var stats = new GeneralStatistics
-            {
-                TotalProducts = products.Count,
-                TotalValue = products.Sum(p => p.Price * p.Quantity),
-                AveragePrice = products.Any() ? products.Average(p => p.Price) : 0
-            };
-
-            return stats;
+            public string Category { get; set; }
+            public int TotalProducts { get; set; }
+            public decimal AveragePrice { get; set; }
+            public decimal TotalValue { get; set; }
         }
-        private List<CategoryStatistics> GetCategoryStatistics()
-        {
-            var categoryStats = (from product in _context.Products
-                                 join category in _context.Categories on product.CategoryId equals category.Id
-                                 group product by new { category.Id, category.Name } into g
-                                 select new CategoryStatistics
-                                 {
-                                     Category = g.Key.Name,
-                                     TotalProducts = g.Count(),
-                                     AveragePrice = g.Average(p => p.Price),
-                                     TotalValue = g.Sum(p => p.Price * p.Quantity)
-                                 }).ToList();
-
-            return categoryStats;
-        }
-    }
-
-    public class GeneralStatistics
-    {
-        public int TotalProducts { get; set; }
-        public decimal TotalValue { get; set; }
-        public decimal AveragePrice { get; set; }
-    }
-
-    public class CategoryStatistics
-    {
-        public string Category { get; set; }
-        public int TotalProducts { get; set; }
-        public decimal AveragePrice { get; set; }
-        public decimal TotalValue { get; set; }
     }
 }
-
