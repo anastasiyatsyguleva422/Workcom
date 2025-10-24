@@ -45,12 +45,10 @@ namespace WpfApp1
         }
         private void UpdateButtonStates(Button activeButton)
         {
-            // Сбрасываем стили всех кнопок
             btnProducts.ClearValue(Button.BackgroundProperty);
             btnCategories.ClearValue(Button.BackgroundProperty);
             btnSearch.ClearValue(Button.BackgroundProperty);
 
-            // Устанавливаем стиль для активной кнопки
             if (activeButton != null)
             {
                 activeButton.Background = new System.Windows.Media.SolidColorBrush(

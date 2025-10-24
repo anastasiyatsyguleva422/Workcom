@@ -21,7 +21,6 @@ namespace WpfApp1
             {
                 using (var context = new ProductInventoryEntities())
                 {
-                    // Общая статистика
                     var products = context.Product.ToList();
                     var totalProducts = products.Count;
                     var totalValue = products.Sum(p => p.Price * p.Quantity);
@@ -52,7 +51,6 @@ namespace WpfApp1
             }
         }
 
-        // Классы для статистики
         public class CategoryStatistics
         {
             public string Category { get; set; }

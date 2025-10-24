@@ -14,7 +14,6 @@ namespace WpfApp1
 
         private void SearchPage_Loaded(object sender, RoutedEventArgs e)
         {
-            // Инициализация после загрузки всех элементов
             LoadCategories();
             LoadAllProducts();
         }
@@ -27,7 +26,6 @@ namespace WpfApp1
                 {
                     var categories = context.Category.ToList();
 
-                    // Очищаем и добавляем элементы безопасно
                     if (cmbCategory != null)
                     {
                         cmbCategory.Items.Clear();
@@ -88,21 +86,17 @@ namespace WpfApp1
                     var searchText = txtSearch?.Text?.Trim()?.ToLower() ?? "";
                     var products = context.Product.Include("Category").AsQueryable();
 
-                    // Поиск по названию
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
                         products = products.Where(p => p.Name.ToLower().Contains(searchText));
                     }
 
-                    // Фильтр по категории
                     if (cmbCategory?.SelectedItem is Category selectedCategory)
                     {
                         products = products.Where(p => p.CategoryID == selectedCategory.CategoryID);
                     }
-                    // Если выбрано "Все категории" (ComboBoxItem)
                     else if (cmbCategory?.SelectedItem is ComboBoxItem comboItem && comboItem.Content.ToString() == "Все категории")
                     {
-                        // Не применяем фильтр - оставляем все товары
                     }
 
                     var results = products.ToList();
@@ -122,7 +116,6 @@ namespace WpfApp1
 
         private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
-            // Сбрасываем поиск
             if (txtSearch != null)
                 txtSearch.Text = "";
 

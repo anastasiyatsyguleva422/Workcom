@@ -9,7 +9,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Простая панель поиска -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
             <TextBox x:Name="txtSearch" Width="300" Padding="5" 
                     TextChanged="TxtSearch_TextChanged"/>
@@ -23,7 +22,6 @@
                    Click="BtnReset_Click"/>
         </StackPanel>
 
-        <!-- Результаты поиска -->
         <DataGrid x:Name="SearchResultsGrid" 
                   Grid.Row="1" 
                   AutoGenerateColumns="False"
@@ -38,7 +36,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <!-- Счетчик результатов -->
         <TextBlock Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" 
                   Margin="0,0,0,5" FontSize="12" Foreground="Gray"
                   x:Name="txtResultsCount"/>

@@ -24,7 +24,7 @@ namespace WpfApp1
         {
             try
             {
-                _context = new ProductInventoryEntities(); // Пересоздаем контекст для обновления данных
+                _context = new ProductInventoryEntities(); 
                 _context.Product.Load();
                 var products = _context.Product.Include(p => p.Category).ToList();
                 ProductsGrid.ItemsSource = products;
@@ -177,7 +177,6 @@ namespace WpfApp1
 
         private void ProductsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Скрываем форму при выборе другого товара
             if (EditForm.Visibility == Visibility.Visible)
             {
                 HideEditForm();
